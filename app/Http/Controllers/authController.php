@@ -10,23 +10,41 @@ use Illuminate\Support\Facades\Hash;
 class authController extends Controller
 {
    public function register(Request $request){
-    $fields = $request->validate([
-        'name'=>'required|string',
-        'email'=> 'required|string|unique:users,email',
-        'password'=>'required|string'
-    ]);
-    $user = User::create([
-        'name' => $fields['name'],
-        'email'=>$fields['email'],
-        'password' =>bcrypt($fields['password'])
-    ]);
-$token = $user->createToken('mogasstoken')->plainTextToken;
-$response = [
-    'user' => $user,
-    'token'=> $token
-];
-return response($response, 201);
+    try {
+        $fields = $request->validate([
+            'name'=>'required|string',
+            'email'=> 'required|string',
+            'password'=>'required|string'
+        ]);
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        return response()->json([
+            'StatusCode'=>400,
+            'StatusDescription'=>'Bad Request',
+            'Data'=>[],
+            'Message'=>$e->getMessage(),
+        ], 400);
+    }
+    $validatemail = $request->input('email');
+    $result =  User::where('email', $validatemail)->get();
+     try {
+        $user = User::create($fields);
+        $token = $user->createToken('mogasstoken')->plainTextToken;
+        $response = [
+            'user' => $user,
+            'token'=> $token
+        ];
+        return response($response, 201);
+  } catch (\Illuminate\Database\QueryException $e) {
+        $errorCode = $e->errorInfo[1];
+
+            return response()->json([
+                'StatusCode'=>1062,
+                'StatusDescription'=>'Error duplicate entry',
+                'Data'=>[$result],
+                'Message'=>'Credential already exists'
+            ]);
    }
+  }
    public function login(Request $request){
     $fields = $request->validate([
         'email'=> 'required|string',
@@ -45,5 +63,14 @@ $response = [
     'token'=> $token
 ];
 return response($response, 201);
+   }
+   public function logout(Request $request){
+    if (auth()->check()) {
+        auth()->user()->tokens()->delete();
+        return response()->json([
+            'message'=>'loggedout'
+        ]);
+    }
+
    }
 }

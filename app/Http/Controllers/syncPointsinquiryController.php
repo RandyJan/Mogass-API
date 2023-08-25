@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -40,12 +41,21 @@ class syncPointsinquiryController extends Controller
        $points = DB::select('SELECT ViewCustomerLoyaltyPoints.FullName,ViewCustomerLoyaltyPoints.Earnings,ViewCustomerLoyaltyPoints.Adjustments,ViewCustomerLoyaltyPoints.Redemptions,dbo.Cards.DVALIDFROM,dbo.Cards.DVALIDUNTIL,
        dbo.Cards.STATUS, ViewCustomerLoyaltyPoints.CustomerID,dbo.Customers.STATUS,dbo.Cards.ID FROM ViewCustomerLoyaltyPoints INNER JOIN  dbo.Customers ON dbo.Customers.ID = ViewCustomerLoyaltyPoints.CustomerID
        INNER JOIN dbo.Cards ON dbo.Cards.ID = ViewCustomerLoyaltyPoints.CardID WHERE ViewCustomerLoyaltyPoints.CardNo =?',[$id]) ;
-
-        return response()->json([
-
+      if(!empty($points)){
+      return response()->json([
             "Retval"=>$points
-
         ]);
+    }
+
+       else{
+        return response([
+            "StatusCode"=>404,
+            "StatusDescription"=>"Error",
+            "Data"=>[],
+            "Message"=>"ID not found"
+        ]);
+    }
+
 }
 
     /**

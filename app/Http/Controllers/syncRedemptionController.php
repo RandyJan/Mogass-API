@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\syncRedemption;
+use Illuminate\Support\Facades\Log;
 
 class syncRedemptionController extends Controller
 {
@@ -25,17 +26,54 @@ class syncRedemptionController extends Controller
      */
     public function store(Request $request)
     {
-        $data=syncRedemption::create($request->LOYALTYREDEMPTIONS);
-        if($data){
-            return response()->json([
-                "Status"=>200,
-                "Message"=>"Insert succesful"
+
+        try{
+
+        $jsondata = json_encode($request->LOYALTYREDEMPTIONS);
+        $jsondatab = json_decode($jsondata);
+            foreach($jsondatab as $data){
+
+                syncRedemption::insert([
+                'BRANCHID' => $data->BRANCHID,
+                'ID'=> $data->ID,
+                'DATE'=> $data->DATE,
+                'CUSTOMERID'=> $data->CUSTOMERID,
+                'CARDID'=> $data->CARDID,
+                'QUANTITY'=> $data->QUANTITY,
+                'UNITPTS'=> $data->UNITPTS,
+                'POINTS'=> $data->POINTS,
+                'UINS'=> $data->UINS,
+                'DINS'=> $data->DINS,
+                'TINS'=> $data->TINS,
+                'CATEGORYCODE'=> $data->CATEGORYCODE,
+                'STATUS'=> $data->STATUS
+
             ]);
+
         }
-        else{
+        return response()->json([
+            "StatusCode"=>200,
+            "StatusDescription" => "Success",
+            "Data"=>[$jsondatab],
+            "Message"=>"Insert Successful"
+        ],200);
+    }
+        catch(\Exception $e){
+            Log::error('An error occurred: ' . $e->getMessage());
+            return response()->json([
+                "StatusCode"=>500,
+                "StatusDescription"=>"Failed",
+                "DATA"=>[$jsondatab],
+                "Message"=>"Something went wrong"
+            ],500);
+
+        }
+
+
+
 
     }
-}
+
 
     /**
      * Display the specified resource.

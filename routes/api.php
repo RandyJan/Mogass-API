@@ -20,12 +20,15 @@ use App\Http\Controllers\syncRedemptionController;
 |
 */
 Route::post('/register', [authController::class, 'register']);
+
 Route::post('/login',[authcontroller::class, 'login']);
 
 Route::group(['middleware'=> ['auth:sanctum']], function () {
+Route::post('/logout',[authcontroller::class, 'logout']);
 Route::get('/syncPointsinquiry/{id}',[syncPointsinquiryController::class, 'show']);
 Route::post('/syncEarnings',[syncEarningsController::class, 'store']);
 Route::post('/syncTrans',[syncTransController::class, 'store']);
 Route::post('/syncRedemption', [syncRedemptionController::class, 'store']);
 
 });
+
