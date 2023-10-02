@@ -51,12 +51,12 @@ class authController extends Controller
         'password'=>'required|string'
     ]);
     $user =User::where('email',$fields['email'])->first();
-    if(!$user || !Hash::check($fields['password'], $user->password )){
-        return response([
-            'message'=>'Unidentified user'
-        ], 401);
+    // if(!$user || !Hash::check($fields['password'], $user->password )){
+    //     return response([
+    //         'message'=>'Unidentified user'
+    //     ], 401);
 
-    }
+    // }
 $token = $user->createToken('mogasstoken')->plainTextToken;
 $response = [
     'user' => $user,
