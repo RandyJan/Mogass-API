@@ -50,19 +50,22 @@ class authController extends Controller
         'email'=> 'required|string',
         'password'=>'required|string'
     ]);
-    $user =User::where('email',$fields['email'])->first();
-    // if(!$user || !Hash::check($fields['password'], $user->password )){
-    //     return response([
-    //         'message'=>'Unidentified user'
-    //     ], 401);
+    $user =User::where('email',$fields['email'])->where('password',$fields['password'])->first();
+    if(!$user){
+        return response([
+            'message'=>'Unidentified user'
+        ], 401);
 
-    // }
+    }
+    else{
+
 $token = $user->createToken('mogasstoken')->plainTextToken;
 $response = [
     'user' => $user,
     'token'=> $token
 ];
 return response($response, 201);
+    }
    }
    public function logout(Request $request){
     if (auth()->check()) {
