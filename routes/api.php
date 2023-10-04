@@ -24,6 +24,9 @@ Route::post('/register', [authController::class, 'register']);
 Route::post('/login',[authcontroller::class, 'login']);
 
 Route::group(['middleware'=> ['auth:sanctum']], function () {
+    if (!auth()->user()) {
+        return response()->json(['error' => 'Invalid token'], 401);
+    }
 Route::post('/logout',[authcontroller::class, 'logout']);
 Route::get('/syncPointsinquiry/{id}',[syncPointsinquiryController::class, 'show']);
 Route::post('/syncEarnings',[syncEarningsController::class, 'store']);
