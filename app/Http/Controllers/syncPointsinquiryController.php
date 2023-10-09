@@ -39,7 +39,7 @@ class syncPointsinquiryController extends Controller
     {
 
        $points = DB::select('SELECT ViewCustomerLoyaltyPoints.FullName,ViewCustomerLoyaltyPoints.Earnings,ViewCustomerLoyaltyPoints.Adjustments,ViewCustomerLoyaltyPoints.Redemptions,dbo.Cards.DVALIDFROM,dbo.Cards.DVALIDUNTIL,
-       dbo.Cards.STATUS, ViewCustomerLoyaltyPoints.CustomerID,dbo.Customers.STATUS,dbo.Cards.ID,ViewCustomerLoyaltyPoints.Balance FROM ViewCustomerLoyaltyPoints INNER JOIN  dbo.Customers ON dbo.Customers.ID = ViewCustomerLoyaltyPoints.CustomerID
+       dbo.Cards.STATUS, ViewCustomerLoyaltyPoints.CustomerID,dbo.Customers.STATUS,dbo.Cards.ID,ViewCustomerLoyaltyPoints.Balance, ViewCustomerLoyaltyPoints.CardTypeID FROM ViewCustomerLoyaltyPoints INNER JOIN  dbo.Customers ON dbo.Customers.ID = ViewCustomerLoyaltyPoints.CustomerID
        INNER JOIN dbo.Cards ON dbo.Cards.ID = ViewCustomerLoyaltyPoints.CardID WHERE ViewCustomerLoyaltyPoints.CardNo =?',[$id]);
       if(!empty($points)){
         foreach($points as $pointinq){
@@ -57,7 +57,8 @@ class syncPointsinquiryController extends Controller
                 'CustomerId'=>$pointinq->CustomerID,
                 'CustomerStatus'=>$pointinq->STATUS,
                 'CardID'=>$pointinq->ID,
-                'Balance'=>$pointinq->Balance
+                'Balance'=>$pointinq->Balance,
+                'CardTypeID'=>$pointinq->CardTypeID
                 ]
         ]);
 
