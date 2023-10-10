@@ -31,40 +31,56 @@ class syncRedemptionController extends Controller
 
         $jsondata = json_encode($request->LOYALTYREDEMPTIONS);
         $jsondatab = json_decode($jsondata);
-            foreach($jsondatab as $data){
 
-                syncRedemption::insert([
+
+            foreach($jsondatab as $data){
+                $maxredemption = syncRedemption::max('ID');
+                $nextredemptionId = $maxredemption + 1;
+                LOG::info($maxredemption);
+                LOG::info($nextredemptionId);
+             $dataRedemption =    syncRedemption::insert([
                 'BRANCHID' => $data->BRANCHID,
-                'ID'=> $data->ID,
+                'ID'=> $nextredemptionId,
                 'DATE'=> $data->DATE,
                 'CUSTOMERID'=> $data->CUSTOMERID,
                 'CARDID'=> $data->CARDID,
+                'REWARDID'=>$data->REWARDID,
                 'QUANTITY'=> $data->QUANTITY,
                 'UNITPTS'=> $data->UNITPTS,
                 'POINTS'=> $data->POINTS,
-                'UINS'=> $data->UINS,
-                'DINS'=> $data->DINS,
-                'TINS'=> $data->TINS,
                 'CATEGORYCODE'=> $data->CATEGORYCODE,
                 'STATUS'=> $data->STATUS
 
             ]);
-
+            if (!$dataRedemption) {
+                // If insertion failed for a record, add an error status to the results array
+                $results[] = [
+                    'StatusCode'=>500,
+                    'BRANCHID' => $data->BRANCHID,
+                    'ID' => $nextredemptionId,
+                    'Message' => 'Failed',
+                ];
+            } else {
+                // If insertion was successful for a record, add a success status to the results array
+                $results[] = [
+                    'StatusCode'=>200,
+                    'BRANCHID' => $nextredemptionId,
+                    // 'ID' => $data->ID,
+                    'Message' => 'Success',
+                ];
+            }
         }
-        return response()->json([
-            "StatusCode"=>200,
-            "StatusDescription" => "Success",
-            "Data"=>[$jsondatab],
-            "Message"=>"Insert Successful"
-        ],200);
+
+        return response()->json([$results]);
     }
+
         catch(\Exception $e){
             Log::error('An error occurred: ' . $e->getMessage());
             return response()->json([
                 "StatusCode"=>500,
                 "StatusDescription"=>"Failed",
                 "DATA"=>[$jsondatab],
-                "Message"=>"Something went wrong"
+                "Message"=>$e->getMessage()
             ],500);
 
         }

@@ -42,50 +42,68 @@ class syncEarningsController extends Controller
 
         $jsondata = json_encode($request->LOYALTYEARNINGS);
         $jsondatab = json_decode($jsondata);
+        $jsonbranchId=[];
+        $jsonId=[];
 
-        try{
+        try {
+            syncEarnings::beginTransaction();
+            foreach ($jsondatab as $data) {
+                $dataEarnings = syncEarnings::insert([
+                    'BRANCHID' => $data->BRANCHID,
+                    'ID'=> $data->ID,
+                    'DATE'=> $data->DATE,
+                    'REFID'=> $data->REFID,
+                    'CUSTOMERID'=> $data->CUSTOMERID,
+                    'ASSOCID'=> $data->ASSOCID,
+                    'CARDID'=> $data->CARDID,
+                    'TOTALLITERS'=> $data->TOTALLITERS,
+                    'TOTALAMOUNT'=> $data->TOTALAMOUNT,
+                    'MULTIPLIER'=> $data->MULTIPLIER,
+                    'POINTS'=> $data->POINTS,
+                    'CASHIERID'=> $data->CASHIERID,
+                    'TRANINVNO'=> $data->TRANINVNO,
+                    'TRANSID'=> $data->TRANSID,
+                    'TRANSDATE'=> $data->TRANSDATE,
+                    'TRANSTIME'=> $data->TRANSTIME,
+                    'CATEGORYCODE'=> $data->CATEGORYCODE,
+                    'STATUS'=> $data->STATUS,
+                    'UPLOADED'=> $data->UPLOADED,
+                ]);
 
-            foreach($jsondatab as $data){
-                syncEarnings::insert([
-                'BRANCHID' => $data->BRANCHID,
-                'ID'=> $data->ID,
-                'DATE'=> $data->DATE,
-                'REFID'=> $data->REFID,
-                'CUSTOMERID'=> $data->CUSTOMERID,
-                'ASSOCID'=> $data->ASSOCID,
-                'CARDID'=> $data->CARDID,
-                'TOTALLITERS'=> $data->TOTALLITERS,
-                'TOTALAMOUNT'=> $data->TOTALAMOUNT,
-                'MULTIPLIER'=> $data->MULTIPLIER,
-                'POINTS'=> $data->POINTS,
-                'CASHIERID'=> $data->CASHIERID,
-                'TRANINVNO'=> $data->TRANINVNO,
-                'TRANSID'=> $data->TRANSID,
-                'TRANSDATE'=> $data->TRANSDATE,
-                'TRANSTIME'=> $data->TRANSTIME,
-                'CATEGORYCODE'=> $data->CATEGORYCODE,
-                'STATUS'=> $data->STATUS,
-                'UPLOADED'=> $data->UPLOADED,
-            ]);
+
+                if (!$dataEarnings) {
+                    // If insertion failed for a record, add an error status to the results array
+                    $results[] = [
+                        'StatusCode'=>500,
+                        'BRANCHID' => $data->BRANCHID,
+                        'ID' => $data->ID,
+                        'Message' => 'Failed',
+                    ];
+                } else {
+                    // If insertion was successful for a record, add a success status to the results array
+                    $results[] = [
+                        'StatusCode'=>200,
+                        'BRANCHID' => $data->BRANCHID,
+                        'ID' => $data->ID,
+                        'Message' => 'Success',
+                    ];
+                }
+
+            }
+
+            // Return the results array as the response
+            return response()->json($results);
         }
-        return response()->json([
-            "StatusCode"=>200,
-            "StatusDescription" => "Success",
-            "Data"=>[$jsondatab],
-            "Message"=>"Insert Successful"
-        ],200);
-    }
-        catch(\Exception $e){
+
+        catch (\Exception $e) {
             Log::error('An error occurred: ' . $e->getMessage());
             return response()->json([
-                "StatusCode"=>500,
-                "StatusDescription"=>"Failed",
-                "DATA"=>[$jsondatab],
-                "Message"=>"Something went wrong"
-            ],500);
-
+                'StatusCode' => 500,
+                'StatusDescription' => 'Failed',
+                'DATA' => $jsonbranchId,
+                'Message' => $e->getMessage(),
+            ], 500);
         }
-
 
     }
 

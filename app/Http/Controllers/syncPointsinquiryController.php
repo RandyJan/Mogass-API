@@ -69,7 +69,7 @@ class syncPointsinquiryController extends Controller
         return response([
             "StatusCode"=>404,
             "StatusDescription"=>"Error",
-            "Data"=>[],
+            "Data"=>[$id],
             "Message"=>"ID not found"
         ]);
     }
