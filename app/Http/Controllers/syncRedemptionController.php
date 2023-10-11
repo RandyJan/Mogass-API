@@ -27,18 +27,20 @@ class syncRedemptionController extends Controller
     public function store(Request $request)
     {
 
-        try{
 
         $jsondata = json_encode($request->LOYALTYREDEMPTIONS);
         $jsondatab = json_decode($jsondata);
 
 
-            foreach($jsondatab as $data){
+        $results=[];
+        foreach ($jsondatab as $data) {
+            try {
+
                 $maxredemption = syncRedemption::max('ID');
                 $nextredemptionId = $maxredemption + 1;
                 LOG::info($maxredemption);
                 LOG::info($nextredemptionId);
-             $dataRedemption =    syncRedemption::insert([
+                $dataRedemption =    syncRedemption::insert([
                 'BRANCHID' => $data->BRANCHID,
                 'ID'=> $nextredemptionId,
                 'DATE'=> $data->DATE,
@@ -50,45 +52,34 @@ class syncRedemptionController extends Controller
                 'POINTS'=> $data->POINTS,
                 'CATEGORYCODE'=> $data->CATEGORYCODE,
                 'STATUS'=> $data->STATUS
+                ]);
 
-            ]);
-            if (!$dataRedemption) {
-                // If insertion failed for a record, add an error status to the results array
                 $results[] = [
-                    'StatusCode'=>500,
-                    'BRANCHID' => $data->BRANCHID,
-                    'ID' => $nextredemptionId,
-                    'Message' => 'Failed',
-                ];
-            } else {
-                // If insertion was successful for a record, add a success status to the results array
-                $results[] = [
-                    'StatusCode'=>200,
-                    'BRANCHID' => $nextredemptionId,
-                    // 'ID' => $data->ID,
+                    'StatusCode' => 200,
+                    'ID' =>$nextredemptionId,
                     'Message' => 'Success',
+                ];
+            } catch (\Illuminate\Database\QueryException $exception) {
+                $results[] = [
+                    'StatusCode' => 500,
+                    'ID' =>$nextredemptionId,
+                    'Message' => 'Failed',
                 ];
             }
         }
 
-        return response()->json([$results]);
-    }
-
-        catch(\Exception $e){
-            Log::error('An error occurred: ' . $e->getMessage());
-            return response()->json([
-                "StatusCode"=>500,
-                "StatusDescription"=>"Failed",
-                "DATA"=>[$jsondatab],
-                "Message"=>$e->getMessage()
-            ],500);
-
-        }
-
-
-
+        return response()->json([
+            "StatusCode" => 200,
+            "StatusDescription" => "OK",
+            "Data" => [
+                "RetVal" => $results
+            ],
+            "Message" => "Response payload"
+        ]);
 
     }
+
+
 
 
     /**
