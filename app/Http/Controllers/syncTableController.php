@@ -56,7 +56,7 @@ class syncTableController extends Controller
             if(!empty($id)){
                 $datab = [];
                 foreach($id as $dataid){
-                    $data = DB::table($tablename)->where('ID',$dataid->ID)->get();
+                    $data = DB::table($tablename)->where('LPMID',$dataid->ID)->get();
                     $datab[]=$data;
                     }
                     $updatedata = DB::table('dbo.SyncTable')

@@ -68,7 +68,7 @@ class syncEarningsController extends Controller
                         'TRANSTIME' => $data->TRANSTIME,
                         'CATEGORYCODE' => $data->CATEGORYCODE,
                         'STATUS' => $data->STATUS,
-                        'UPLOADED' => $data->UPLOADED,
+
                     ]);
 
                     $results[] = [
