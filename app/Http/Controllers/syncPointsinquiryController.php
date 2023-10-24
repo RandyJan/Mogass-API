@@ -71,7 +71,7 @@ class syncPointsinquiryController extends Controller
             "StatusDescription"=>"Error",
             "Data"=>[$id],
             "Message"=>"ID not found"
-        ]);
+        ],404);
     }
 
 }
