@@ -20,6 +20,7 @@ class syncTrans extends Model
         'UNITPOINT',
         'TOTALPOINTS',
         'UPLOADED',
+        'DATE_TRANS'
     ];
     public $timestamps = false;
 }
