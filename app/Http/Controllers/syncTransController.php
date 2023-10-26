@@ -40,6 +40,8 @@ class syncTransController extends Controller
                     'AMOUNT'=> $data->AMOUNT,
                     'UNITPOINT'=> $data->UNITPOINT,
                     'TOTALPOINTS'=> $data->TOTALPOINTS,
+                    'ITEMNO'=>$data->ITEMNO,
+                    'DATE_TRANS'=>$data->DATETRANS,
 
 
                 ]);
