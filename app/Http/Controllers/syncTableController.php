@@ -49,7 +49,7 @@ class syncTableController extends Controller
         $currentdate =  date('Y-m-d H:i:s');
         if($table == 3){
             $id = DB::table('dbo.SyncTable')
-            ->where('LPMID', $branchid)
+            ->where('ID', $branchid)
             ->where('STATUS',0)
             ->where('TABLEID', $table)
             ->get();
